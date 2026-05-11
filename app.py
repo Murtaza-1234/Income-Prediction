@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import base64
 
 st.set_page_config(
     page_title="Student Income Predictor",
@@ -8,19 +9,40 @@ st.set_page_config(
     layout="centered"
 )
 
-page_bg = """
-<style>
-.stApp {
-    background: linear-gradient(to right, #141e30, #243b55);
-    color: white;
-}
+def get_base64(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
-h1 {
+bg_image = get_base64("background.jpg")
+
+page_bg = f"""
+<style>
+
+.stApp {{
+    background-image: url("data:image/jpg;base64,{bg_image}");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}}
+
+.main {{
+    background-color: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 15px;
+}}
+
+h1 {{
     color: #00FFD1;
     text-align: center;
-}
+}}
 
-.stButton>button {
+p, label {{
+    color: white !important;
+    font-size: 16px;
+}}
+
+.stButton>button {{
     background-color: #00ADB5;
     color: white;
     border-radius: 10px;
@@ -28,19 +50,20 @@ h1 {
     width: 100%;
     font-size: 18px;
     border: none;
-}
+}}
 
-.stButton>button:hover {
+.stButton>button:hover {{
     background-color: #008C9E;
-}
+}}
 
-div[data-baseweb="select"] {
+div[data-baseweb="select"] {{
     color: black;
-}
+}}
 
-input {
+input {{
     color: black !important;
-}
+}}
+
 </style>
 """
 
@@ -56,12 +79,13 @@ st.markdown(
 )
 
 st.info(
-    "Enter student details below to predict monthly income using Machine Learning."
+    "Predict student monthly income using Machine Learning 🚀"
 )
 
 col1, col2 = st.columns(2)
 
 with col1:
+
     age = st.number_input(
         'Age',
         15,
@@ -91,6 +115,7 @@ with col1:
     )
 
 with col2:
+
     part_time_hours = st.number_input(
         'Part-Time Hours Per Week',
         0.0,
@@ -138,6 +163,7 @@ city = st.selectbox(
 )
 
 input_df = pd.DataFrame({
+
     'Age': [age],
     'Study_Hours_per_Day': [study_hours],
     'Part_Time_Hours_per_Week': [part_time_hours],
@@ -147,6 +173,7 @@ input_df = pd.DataFrame({
     'Sleep_Hours': [sleep_hours],
     'Stress_Level': [stress_level],
     'City': [city]
+
 })
 
 input_df[['Stress_Level']] = ordinal_encoder.transform(
@@ -159,6 +186,7 @@ input_df = pd.get_dummies(
 )
 
 expected_columns = [
+
     'Age',
     'Study_Hours_per_Day',
     'Part_Time_Hours_per_Week',
@@ -176,15 +204,18 @@ expected_columns = [
     'City_Kolkata',
     'City_Mumbai',
     'City_Pune'
+
 ]
 
 for col in expected_columns:
+
     if col not in input_df.columns:
         input_df[col] = 0
 
 input_df = input_df[expected_columns]
 
 numeric_cols = [
+
     'Age',
     'Study_Hours_per_Day',
     'Part_Time_Hours_per_Week',
@@ -192,6 +223,7 @@ numeric_cols = [
     'Attendance(%)',
     'Internet_Usage_Hours',
     'Sleep_Hours'
+
 ]
 
 input_df[numeric_cols] = scaler.transform(
