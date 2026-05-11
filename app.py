@@ -2,57 +2,125 @@ import streamlit as st
 import pandas as pd
 import joblib
 
+st.set_page_config(
+    page_title="Student Income Predictor",
+    page_icon="💰",
+    layout="centered"
+)
+
+page_bg = """
+<style>
+.stApp {
+    background: linear-gradient(to right, #141e30, #243b55);
+    color: white;
+}
+
+h1 {
+    color: #00FFD1;
+    text-align: center;
+}
+
+.stButton>button {
+    background-color: #00ADB5;
+    color: white;
+    border-radius: 10px;
+    height: 3em;
+    width: 100%;
+    font-size: 18px;
+    border: none;
+}
+
+.stButton>button:hover {
+    background-color: #008C9E;
+}
+
+div[data-baseweb="select"] {
+    color: black;
+}
+
+input {
+    color: black !important;
+}
+</style>
+"""
+
+st.markdown(page_bg, unsafe_allow_html=True)
+
 model = joblib.load('income_model.pkl')
 scaler = joblib.load('scaler.pkl')
 ordinal_encoder = joblib.load('ordinal_encoder.pkl')
 
-st.set_page_config(page_title="Student Income Predictor")
-
-st.title("💰 Student Monthly Income Predictor")
-
-age = st.number_input('Age', 15, 40, 20)
-
-study_hours = st.number_input(
-    'Study Hours Per Day',
-    0.0,
-    15.0,
-    5.0
+st.markdown(
+    "<h1>💰 Student Monthly Income Predictor</h1>",
+    unsafe_allow_html=True
 )
 
-part_time_hours = st.number_input(
-    'Part-Time Hours Per Week',
-    0.0,
-    60.0,
-    10.0
+st.info(
+    "Enter student details below to predict monthly income using Machine Learning."
 )
 
-cgpa = st.number_input(
-    'CGPA',
-    0.0,
-    10.0,
-    7.5
-)
+col1, col2 = st.columns(2)
 
-attendance = st.number_input(
-    'Attendance (%)',
-    0.0,
-    100.0,
-    85.0
-)
+with col1:
+    age = st.number_input(
+        'Age',
+        15,
+        40,
+        20
+    )
 
-internet_usage = st.number_input(
-    'Internet Usage Hours',
-    0.0,
-    24.0,
-    6.0
-)
+    study_hours = st.number_input(
+        'Study Hours Per Day',
+        0.0,
+        15.0,
+        5.0
+    )
 
-sleep_hours = st.number_input(
-    'Sleep Hours',
-    0.0,
-    15.0,
-    7.0
-)
+    cgpa = st.number_input(
+        'CGPA',
+        0.0,
+        10.0,
+        7.5
+    )
+
+    attendance = st.number_input(
+        'Attendance (%)',
+        0.0,
+        100.0,
+        85.0
+    )
+
+with col2:
+    part_time_hours = st.number_input(
+        'Part-Time Hours Per Week',
+        0.0,
+        60.0,
+        10.0
+    )
+
+    internet_usage = st.number_input(
+        'Internet Usage Hours',
+        0.0,
+        24.0,
+        6.0
+    )
+
+    sleep_hours = st.number_input(
+        'Sleep Hours',
+        0.0,
+        15.0,
+        7.0
+    )
+
+    stress_level = st.selectbox(
+        'Stress Level',
+        [
+            'Low',
+            'Medium',
+            'High',
+            'Extreme'
+        ]
+    )
 
 city = st.selectbox(
     'City',
@@ -66,16 +134,6 @@ city = st.selectbox(
         'Kolkata',
         'Mumbai',
         'Pune'
-    ]
-)
-
-stress_level = st.selectbox(
-    'Stress Level',
-    [
-        'Low',
-        'Medium',
-        'High',
-        'Extreme'
     ]
 )
 
@@ -140,9 +198,10 @@ input_df[numeric_cols] = scaler.transform(
     input_df[numeric_cols]
 )
 
-if st.button('Predict Monthly Income'):
+if st.button('🚀 Predict Monthly Income'):
+
     prediction = model.predict(input_df)
 
     st.success(
-        f'Predicted Monthly Income: ₹ {prediction[0]:,.2f}'
+        f'💸 Predicted Monthly Income: ₹ {prediction[0]:,.2f}'
     )
